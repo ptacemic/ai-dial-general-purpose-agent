@@ -54,7 +54,7 @@
    - Attach [microwave_manual.txt](tests/microwave_manual.txt) and ask: `How should I clean the plate?` - should use pagination (2-3 tool calls) to fetch content and then should provide the response
 
 
-## Step 3
+## Step 3a
 **As you have seen full content extraction from files is not efficient, we need to add RAG search capability to enhance our Agent**
 1. Provide implementation for the [tools/base.py](task/tools/rag/rag_tool.py) according to TODO
 2. Add this tool to [app.py](task/app.py)
@@ -62,7 +62,7 @@
    - Attach [microwave_manual.txt](tests/microwave_manual.txt) and ask: `How should I clean the plate?` - should call RAG tool. The main criteria here is that this tool will be called, usually it will try to call the `file_content_extraction_tool`, but after fetching 1st page and seeing that there are more paged it should call RAG tool, also user can indicate to model that RAG tool should be called
    - Pay attention that tool SYSTEM prompt matters, tool description as well. Configure it to achieve best result!
 
-## Step 3
+## Step 3b
 **Now let's add Image generation tool**
 
 **ℹ️ In DIAL we name models and applications as deployments**

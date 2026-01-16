@@ -12,30 +12,52 @@ from task.tools.models import ToolCallParams
 class MCPTool(BaseTool):
 
     def __init__(self, client: MCPClient, mcp_tool_model: MCPToolModel):
-        #TODO:
         # 1. Set client
+        self.client = client
         # 2. Set mcp_tool_model
-        raise NotImplementedError()
+        self.mcp_tool_model = mcp_tool_model
 
     async def _execute(self, tool_call_params: ToolCallParams) -> str | Message:
-        #TODO:
-        # 1. Load arguments wit `json`
+        # 1. Load arguments with `json`
+        arguments = json.loads(tool_call_params.tool_call.function.arguments)
+        
         # 2. Get content with mcp client tool call
+        stage = tool_call_params.stage
+        
+        # Append request arguments to stage (if show_in_stage is True, this is already done by base class)
+        # But we can add additional formatting here if needed
+        
+        try:
+            # Call the MCP tool
+            content = await self.client.call_tool(self.mcp_tool_model.name, arguments)
+            
+            # Ensure content is a string
+            if not isinstance(content, str):
+                content = str(content)
+            
+        except Exception as e:
+            error_msg = f"Error calling MCP tool {self.mcp_tool_model.name}: {str(e)}"
+            stage.append_content(error_msg)
+            return error_msg
+        
         # 3. Append retrieved content to stage
+        # Format it nicely like other tools do
+        stage.append_content(f"```text\n\r{content}\n\r```\n\r")
+        
         # 4. return content
-        raise NotImplementedError()
+        return content
 
     @property
     def name(self) -> str:
-        # TODO: provide name from mcp_tool_model
-        raise NotImplementedError()
+        # provide name from mcp_tool_model
+        return self.mcp_tool_model.name
 
     @property
     def description(self) -> str:
-        # TODO: provide description from mcp_tool_model
-        raise NotImplementedError()
+        # provide description from mcp_tool_model
+        return self.mcp_tool_model.description
 
     @property
     def parameters(self) -> dict[str, Any]:
-        # TODO: provide parameters from mcp_tool_model
-        raise NotImplementedError()
+        # provide parameters from mcp_tool_model
+        return self.mcp_tool_model.parameters
